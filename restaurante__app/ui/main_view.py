@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+import os
 
 
 class MainView:
@@ -9,6 +10,40 @@ class MainView:
         self.servicio = servicio
         self.cerrar_sesion = cerrar_sesion
 
+        # ======================================================
+        # RUTA DE LOS ICONOS
+        # ======================================================
+        carpeta_assets = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "assets"
+        )
+
+        # ======================================================
+        # CARGAR IMÁGENES
+        # ======================================================
+        self.logo_img = self.cargar_imagen(
+            os.path.join(carpeta_assets, "logo.png")
+        )
+
+        self.usuarios_img = self.cargar_imagen(
+            os.path.join(carpeta_assets, "usuarios.png")
+        )
+
+        self.productos_img = self.cargar_imagen(
+            os.path.join(carpeta_assets, "productos.png")
+        )
+
+        self.ventas_img = self.cargar_imagen(
+            os.path.join(carpeta_assets, "ventas.png")
+        )
+
+        self.salir_img = self.cargar_imagen(
+            os.path.join(carpeta_assets, "salir.png")
+        )
+
+        # ======================================================
+        # FRAME PRINCIPAL
+        # ======================================================
         self.frame = tk.Frame(
             self.root,
             bg="white"
@@ -19,6 +54,20 @@ class MainView:
             fill="both"
         )
 
+        # ======================================================
+        # LOGO
+        # ======================================================
+        if self.logo_img:
+            logo_label = tk.Label(
+                self.frame,
+                image=self.logo_img,
+                bg="white"
+            )
+            logo_label.pack(pady=(10, 0))
+
+        # ======================================================
+        # TÍTULO
+        # ======================================================
         titulo = tk.Label(
             self.frame,
             text="Panel Principal - Restaurante",
@@ -29,6 +78,9 @@ class MainView:
 
         titulo.pack(pady=10)
 
+        # ======================================================
+        # MENÚ
+        # ======================================================
         menu = tk.Frame(
             self.frame,
             bg="white"
@@ -36,51 +88,78 @@ class MainView:
 
         menu.pack(pady=5)
 
-        ttk.Button(
+        # ======================================================
+        # BOTÓN PRODUCTOS
+        # ======================================================
+        boton_productos = ttk.Button(
             menu,
             text="Ver Productos",
+            image=self.productos_img,
+            compound="top",
             command=self.mostrar_productos
-        ).grid(
-            row=0,
-            column=0,
-            padx=5
         )
 
-        ttk.Button(
+        boton_productos.grid(
+            row=0,
+            column=0,
+            padx=10
+        )
+
+        # ======================================================
+        # BOTÓN USUARIOS
+        # ======================================================
+        boton_usuarios = ttk.Button(
             menu,
             text="Ver Usuarios",
+            image=self.usuarios_img,
+            compound="top",
             command=self.mostrar_usuarios
-        ).grid(
+        )
+
+        boton_usuarios.grid(
             row=0,
             column=1,
-            padx=5
+            padx=10
         )
 
         # ======================================================
         # SEMANA 15
-        # Botón de ventas utilizando command=
+        # BOTÓN VENTAS
         # ======================================================
-
-        ttk.Button(
+        boton_ventas = ttk.Button(
             menu,
             text="Ventas",
+            image=self.ventas_img,
+            compound="top",
             command=self.mostrar_ventas
-        ).grid(
+        )
+
+        boton_ventas.grid(
             row=0,
             column=2,
-            padx=5
+            padx=10
         )
 
-        ttk.Button(
+        # ======================================================
+        # BOTÓN CERRAR SESIÓN
+        # ======================================================
+        boton_salir = ttk.Button(
             menu,
             text="Cerrar sesión",
+            image=self.salir_img,
+            compound="top",
             command=self.cerrar
-        ).grid(
-            row=0,
-            column=3,
-            padx=5
         )
 
+        boton_salir.grid(
+            row=0,
+            column=3,
+            padx=10
+        )
+
+        # ======================================================
+        # CONTENIDO
+        # ======================================================
         self.contenido = tk.Frame(
             self.frame,
             bg="white"
@@ -92,6 +171,22 @@ class MainView:
             padx=15,
             pady=10
         )
+
+    # ==========================================================
+    # CARGAR IMAGEN
+    # ==========================================================
+
+    def cargar_imagen(self, ruta):
+        try:
+            if os.path.exists(ruta):
+                return tk.PhotoImage(file=ruta)
+            else:
+                print(f"No se encontró la imagen: {ruta}")
+                return None
+
+        except Exception as error:
+            print(f"No se pudo cargar la imagen {ruta}: {error}")
+            return None
 
     # ==========================================================
     # LIMPIAR CONTENIDO
@@ -106,6 +201,7 @@ class MainView:
     # ==========================================================
 
     def mostrar_productos(self):
+
         self.limpiar_contenido()
 
         formulario = tk.LabelFrame(
@@ -342,13 +438,19 @@ class MainView:
 
         self.cargar_tabla_productos()
 
+    # ==========================================================
+    # CARGAR TABLA PRODUCTOS
+    # ==========================================================
+
     def cargar_tabla_productos(self):
+
         for item in self.tabla_productos.get_children():
             self.tabla_productos.delete(item)
 
         productos = self.servicio.listar_productos()
 
         for producto in productos:
+
             self.tabla_productos.insert(
                 "",
                 "end",
@@ -360,17 +462,24 @@ class MainView:
                 )
             )
 
+    # ==========================================================
+    # REGISTRAR PRODUCTO
+    # ==========================================================
+
     def registrar_producto(self):
+
         id = self.id_entry.get()
         nombre = self.nombre_entry.get()
         precio = self.precio_entry.get()
         cantidad = self.cantidad_entry.get()
 
         if not id or not nombre or not precio or not cantidad:
+
             messagebox.showwarning(
                 "Campos vacíos",
                 "Complete todos los campos."
             )
+
             return
 
         correcto, mensaje = self.servicio.registrar_producto(
@@ -381,6 +490,7 @@ class MainView:
         )
 
         if correcto:
+
             messagebox.showinfo(
                 "Registro",
                 mensaje
@@ -390,28 +500,38 @@ class MainView:
             self.cargar_tabla_productos()
 
         else:
+
             messagebox.showerror(
                 "Error",
                 mensaje
             )
 
+    # ==========================================================
+    # CARGAR PRODUCTO
+    # ==========================================================
+
     def cargar_producto(self):
+
         id = self.id_entry.get()
 
         if not id:
+
             messagebox.showwarning(
                 "Campo vacío",
                 "Ingrese el ID del producto."
             )
+
             return
 
         producto = self.servicio.buscar_producto(id)
 
         if producto is None:
+
             messagebox.showerror(
                 "Error",
                 "Producto no encontrado."
             )
+
             return
 
         self.nombre_entry.delete(
@@ -444,17 +564,24 @@ class MainView:
             producto.cantidad
         )
 
+    # ==========================================================
+    # ACTUALIZAR PRODUCTO
+    # ==========================================================
+
     def actualizar_producto(self):
+
         id = self.id_entry.get()
         nombre = self.nombre_entry.get()
         precio = self.precio_entry.get()
         cantidad = self.cantidad_entry.get()
 
         if not id or not nombre or not precio or not cantidad:
+
             messagebox.showwarning(
                 "Campos vacíos",
                 "Complete todos los campos."
             )
+
             return
 
         correcto, mensaje = self.servicio.actualizar_producto(
@@ -465,6 +592,7 @@ class MainView:
         )
 
         if correcto:
+
             messagebox.showinfo(
                 "Actualización",
                 mensaje
@@ -474,19 +602,27 @@ class MainView:
             self.cargar_tabla_productos()
 
         else:
+
             messagebox.showerror(
                 "Error",
                 mensaje
             )
 
+    # ==========================================================
+    # ELIMINAR PRODUCTO
+    # ==========================================================
+
     def eliminar_producto(self):
+
         id = self.id_entry.get()
 
         if not id:
+
             messagebox.showwarning(
                 "Campo vacío",
                 "Ingrese el ID del producto."
             )
+
             return
 
         confirmar = messagebox.askyesno(
@@ -500,6 +636,7 @@ class MainView:
         correcto, mensaje = self.servicio.eliminar_producto(id)
 
         if correcto:
+
             messagebox.showinfo(
                 "Eliminación",
                 mensaje
@@ -509,12 +646,18 @@ class MainView:
             self.cargar_tabla_productos()
 
         else:
+
             messagebox.showerror(
                 "Error",
                 mensaje
             )
 
+    # ==========================================================
+    # LIMPIAR FORMULARIO
+    # ==========================================================
+
     def limpiar_formulario(self):
+
         self.id_entry.delete(
             0,
             tk.END
@@ -540,6 +683,7 @@ class MainView:
     # ==========================================================
 
     def mostrar_usuarios(self):
+
         self.limpiar_contenido()
 
         grupo = tk.LabelFrame(
@@ -620,6 +764,7 @@ class MainView:
         usuarios = self.servicio.listar_usuarios()
 
         for usuario in usuarios:
+
             tabla.insert(
                 "",
                 "end",
@@ -635,6 +780,7 @@ class MainView:
     # ==========================================================
 
     def mostrar_ventas(self):
+
         self.limpiar_contenido()
 
         formulario = tk.LabelFrame(
@@ -822,47 +968,58 @@ class MainView:
     # ==========================================================
 
     def registrar_venta(self):
+
         usuario_seleccionado = self.usuario_combo.get()
         producto_seleccionado = self.producto_combo.get()
 
         if not usuario_seleccionado:
+
             messagebox.showwarning(
                 "Usuario",
                 "Seleccione un usuario."
             )
+
             return
 
         if not producto_seleccionado:
+
             messagebox.showwarning(
                 "Producto",
                 "Seleccione un producto."
             )
+
             return
 
         # Obtener los ID seleccionados
+
         usuario_id = usuario_seleccionado.split(" - ")[0]
         producto_id = producto_seleccionado.split(" - ")[0]
 
         # Delegar la operación al servicio
+
         correcto, mensaje = self.servicio.registrar_venta(
             usuario_id,
             producto_id
         )
 
         if correcto:
+
             messagebox.showinfo(
                 "Venta",
                 mensaje
             )
 
             # Limpiar las selecciones
+
             self.usuario_combo.set("")
             self.producto_combo.set("")
 
             # Actualizar la tabla
+
             self.cargar_tabla_ventas()
 
         else:
+
             messagebox.showerror(
                 "Error",
                 mensaje
@@ -873,12 +1030,14 @@ class MainView:
     # ==========================================================
 
     def cargar_tabla_ventas(self):
+
         for item in self.tabla_ventas.get_children():
             self.tabla_ventas.delete(item)
 
         ventas = self.servicio.listar_ventas()
 
         for venta in ventas:
+
             self.tabla_ventas.insert(
                 "",
                 "end",
@@ -894,5 +1053,6 @@ class MainView:
     # ==========================================================
 
     def cerrar(self):
+
         self.frame.destroy()
         self.cerrar_sesion()
