@@ -25,5 +25,12 @@
         "fecha": "2026-09-27 16:49:06",
         "usuario_id": 2,
         "producto_id": 2
+    },
+    {
+        "usuario": "Marcos",
+        "usuario_id": 2,
+        "producto": "Ensalada",
+        "producto_id": 3,
+        "fecha": "2026-10-03 11:51:30"
     }
 ]

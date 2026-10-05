@@ -5,9 +5,14 @@ from tkinter import messagebox
 class LoginView:
 
     def __init__(self, root, servicio, mostrar_principal):
+
         self.root = root
         self.servicio = servicio
         self.mostrar_principal = mostrar_principal
+
+        # ==========================================================
+        # FRAME PRINCIPAL
+        # ==========================================================
 
         self.frame = tk.Frame(
             self.root,
@@ -19,6 +24,10 @@ class LoginView:
             fill="both"
         )
 
+        # ==========================================================
+        # TÍTULO
+        # ==========================================================
+
         titulo = tk.Label(
             self.frame,
             text="RESTAURANTE APP",
@@ -27,7 +36,9 @@ class LoginView:
             fg="#8B3A62"
         )
 
-        titulo.pack(pady=(60, 30))
+        titulo.pack(
+            pady=(60, 30)
+        )
 
         subtitulo = tk.Label(
             self.frame,
@@ -36,14 +47,22 @@ class LoginView:
             bg="white"
         )
 
-        subtitulo.pack(pady=5)
+        subtitulo.pack(
+            pady=5
+        )
+
+        # ==========================================================
+        # USUARIO
+        # ==========================================================
 
         tk.Label(
             self.frame,
             text="Usuario:",
             font=("Arial", 11),
             bg="white"
-        ).pack(pady=(20, 5))
+        ).pack(
+            pady=(20, 5)
+        )
 
         self.usuario_entry = tk.Entry(
             self.frame,
@@ -51,14 +70,22 @@ class LoginView:
             width=30
         )
 
-        self.usuario_entry.pack(pady=5)
+        self.usuario_entry.pack(
+            pady=5
+        )
+
+        # ==========================================================
+        # CONTRASEÑA
+        # ==========================================================
 
         tk.Label(
             self.frame,
             text="Contraseña:",
             font=("Arial", 11),
             bg="white"
-        ).pack(pady=(10, 5))
+        ).pack(
+            pady=(10, 5)
+        )
 
         self.contraseña_entry = tk.Entry(
             self.frame,
@@ -67,7 +94,13 @@ class LoginView:
             width=30
         )
 
-        self.contraseña_entry.pack(pady=5)
+        self.contraseña_entry.pack(
+            pady=5
+        )
+
+        # ==========================================================
+        # BOTÓN INGRESAR
+        # ==========================================================
 
         tk.Button(
             self.frame,
@@ -77,35 +110,83 @@ class LoginView:
             bg="#8B3A62",
             fg="white",
             command=self.ingresar
-        ).pack(pady=25)
+        ).pack(
+            pady=25
+        )
+
+        # ==========================================================
+        # EVENTOS
+        # ==========================================================
+
+        self.usuario_entry.bind(
+            "<Return>",
+            self.ingresar
+        )
+
+        self.contraseña_entry.bind(
+            "<Return>",
+            self.ingresar
+        )
+
+        # ==========================================================
+        # ENFOQUE INICIAL
+        # ==========================================================
 
         self.usuario_entry.focus()
 
-        self.root.bind(
-            "<Return>",
-            lambda event: self.ingresar()
-        )
 
-    def ingresar(self):
+    # ==========================================================
+    # INGRESAR
+    # ==========================================================
+
+    def ingresar(self, event=None):
+
         usuario = self.usuario_entry.get().strip()
+
         contraseña = self.contraseña_entry.get().strip()
 
+        # ----------------------------------------------------------
+        # CAMPOS VACÍOS
+        # ----------------------------------------------------------
+
         if not usuario or not contraseña:
+
             messagebox.showwarning(
                 "Campos vacíos",
                 "Ingrese usuario y contraseña."
             )
-            return
+
+            return "break"
+
+        # ----------------------------------------------------------
+        # VALIDAR USUARIO
+        # ----------------------------------------------------------
 
         if self.servicio.validar_usuario(
             usuario,
             contraseña
         ):
-            self.root.unbind("<Return>")
+
+            # Obtener el usuario completo
+            usuario_actual = self.servicio.obtener_usuario(
+                usuario,
+                contraseña
+            )
+
+            # Quitar eventos del Login
+            self.usuario_entry.unbind("<Return>")
+            self.contraseña_entry.unbind("<Return>")
+
+            # Eliminar Login
             self.frame.destroy()
-            self.mostrar_principal()
+
+            # Enviar usuario autenticado al MainView
+            self.mostrar_principal(
+                usuario_actual
+            )
 
         else:
+
             messagebox.showerror(
                 "Acceso denegado",
                 "Usuario o contraseña incorrectos."
@@ -117,3 +198,5 @@ class LoginView:
             )
 
             self.contraseña_entry.focus()
+
+        return "break"

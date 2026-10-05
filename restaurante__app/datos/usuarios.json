@@ -3,12 +3,21 @@
         "id": 1,
         "nombre": "Melany",
         "usuario": "admin",
-        "contraseña": "1234"
+        "contraseña": "1234",
+        "rol": "Administrador"
     },
     {
         "id": 2,
         "nombre": "Marcos",
         "usuario": "mesero",
-        "contraseña": "1235"
+        "contraseña": "1235",
+        "rol": "Mesero"
+    },
+    {
+        "id": 3,
+        "nombre": "Mercedes",
+        "usuario": "cliente",
+        "contraseña": "1236",
+        "rol": "Cliente"
     }
 ]
